@@ -1,0 +1,41 @@
+version: 1.0
+tasks:
+  - task: executeScript
+    inputs:
+      - frequency: once
+        type: powershell
+        runAs: localSystem
+        content: |-
+          echo "CLONE Signalling Web Server"
+          $env:GCM_AUTODETECT_TIMEOUT=-1
+          $env:GIT_REDIRECT_STDERR='2>&1'
+          git config --global http.sslBackend
+          New-Item -Path "C:\Apps" -ItemType Directory
+          Set-Location -Path "C:\Apps"
+          git clone https://xxx:xxx@xxx.com/artheon/pixel-streaming-signalling-web-server.git
+          pixel-streaming-signalling-web-server\SignallingWebServer\platform_scripts\cmd\setup.bat
+          curl.exe "$(curl.exe https://test.xxxxx.veverse.com/v2/pixelstreaming/launcher/latest)" --output PixelStreamingLauncher.exe
+          $instanceId = Get-EC2InstanceMetadata -Path /instance-id
+          $env:INSTANCE_ID=$instanceId
+          $env:USER_EMAIL='gameserver@example.com'
+          $env:USER_PASSWORD='password'
+          $env:CLICKHOUSE_HOST='db.example.com'
+          $env:CLICKHOUSE_PORT='9000'
+          $env:CLICKHOUSE_NAME='test'
+          $env:CLICKHOUSE_USER='default'
+          $env:CLICKHOUSE_PASS='xxxxxxxxxxxxxxx'
+          Start-Process .\PixelStreamingLauncher.exe -ArgumentList "-env=shipping"
+          pixel-streaming-signalling-web-server\SignallingWebServer\platform_scripts\cmd\Start_WithTURN_SignallingServer.ps1
+#  - task: executeScript
+#    inputs:
+#      - frequency: always
+#        type: powershell
+#        runAs: localSystem
+#        content: |-
+#          Set-Location -Path "C:\Apps"
+#          curl.exe "$(curl.exe https://test.xxxxx.veverse.com/v2/pixelstreaming/launcher/latest)" --output PixelStreamingLauncher.exe
+#          $env:USER_EMAIL='gameserver@example.com'
+#          $env:USER_PASSWORD='xxxxxxxxxxxxxxxxx'
+#          $env:VE_API2_ROOT_URL='https://test.xxxxx.veverse.com/v2'
+#          Start-Process .\PixelStreamingLauncher.exe -ArgumentList "-env=shipping"
+#          pixel-streaming-signalling-web-server/platform_scripts/cmd/Start_WithTURN_SignallingServer.ps1

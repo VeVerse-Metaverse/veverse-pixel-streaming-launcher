@@ -1,0 +1,6 @@
+project: veverse-pixel-streaming-launcher
+configVersion: 1
+
+---
+image: veverse-pixel-streaming-launcher
+dockerfile: Dockerfile

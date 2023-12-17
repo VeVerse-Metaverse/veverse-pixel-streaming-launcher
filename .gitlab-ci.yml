@@ -1,0 +1,23 @@
+variables:
+  WERF_VERSION: 1.2 ea
+
+stages:
+  - build
+
+.build:
+  stage: build
+  script:
+    - source ~/.bashrc
+    - type multiwerf && source $(multiwerf use ${WERF_VERSION} --as-file)
+    - type werf && source $(werf ci-env gitlab --as-file)
+    - werf build
+  tags:
+    - werf
+
+Build Latest:
+  extends: .build
+  variables:
+    WERF_ADD_CUSTOM_TAG_BRANCH: "%image%-${CI_COMMIT_REF_SLUG}"
+  only:
+    - latest
+  when: always
